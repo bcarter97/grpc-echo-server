@@ -2,6 +2,7 @@ package io.github.bcarter97.echo
 
 import buildinfo.BuildInfo
 import cats.effect.{IO, IOApp, Resource}
+import cats.syntax.all.*
 import fs2.grpc.syntax.all.*
 import io.github.bcarter97.echo.config.Config
 import io.github.bcarter97.echo.health.HealthService
@@ -25,6 +26,7 @@ object Main extends IOApp.Simple {
   val server: Resource[IO, Server] =
     for {
       config   <- ConfigSource.default.at("grpc-server").loadF[IO, Config]().toResource
+      _        <- IO.println(s"Loaded config ${config.show}").toResource
       address  <- config.socketAddress[IO].toResource
       executor <- IO.executor.toResource
       services <- serviceResource

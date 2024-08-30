@@ -6,4 +6,4 @@ addCommandAlias("checkLint", "checkFmt; checkFix")
 addCommandAlias("runLint", "runFmt; runFix")
 
 addCommandAlias("ciBuild", "runLint; test")
-addCommandAlias("ciRelease", "ciBuild; Docker/publish")
+addCommandAlias("ciRelease", "Docker/publish")

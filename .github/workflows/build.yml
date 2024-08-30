@@ -1,0 +1,22 @@
+name: CI Build
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up Scala
+        uses: olafurpg/setup-scala@v14
+        with:
+          java-version: openjdk@1.17.0
+      - name: Coursier cache
+        uses: coursier/cache-action@v6
+      - name: Run tests
+        run: sbt ciBuild

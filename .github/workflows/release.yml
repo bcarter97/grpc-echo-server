@@ -1,0 +1,30 @@
+name: CI Release
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ "v*" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up Scala
+        uses: olafurpg/setup-scala@v14
+        with:
+          java-version: openjdk@1.17.0
+      - name: Coursier cache
+        uses: coursier/cache-action@v6
+      - name: Run tests
+        run: sbt ciBuild
+      - name: Log in to registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
+      - name: Release to Container Registry
+        run: sbt ciRelease

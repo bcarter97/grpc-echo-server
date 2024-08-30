@@ -1,5 +1,6 @@
 package io.github.bcarter97.echo
 
+import buildinfo.BuildInfo
 import cats.effect.{IO, IOApp, Resource}
 import fs2.grpc.syntax.all.*
 import io.github.bcarter97.echo.config.Config
@@ -35,5 +36,6 @@ object Main extends IOApp.Simple {
                     .evalMap(server => IO(server.start()))
     } yield server
 
-  override def run: IO[Unit] = server.useForever
+  override def run: IO[Unit] =
+    IO.println(s"Running ${BuildInfo.toString}") >> server.useForever
 }

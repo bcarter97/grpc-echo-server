@@ -1,6 +1,11 @@
 val scala3Version = "3.5.0"
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
+Global / scalafmtOnCompile    := true
+
+ThisBuild / dynverSeparator := "-"
+
+ThisBuild / versionScheme := Some("early-semver")
 
 lazy val root = project
   .in(file("."))
@@ -9,6 +14,7 @@ lazy val root = project
     scalaVersion      := scala3Version,
     semanticdbEnabled := true,
     semanticdbVersion := scalafixSemanticdb.revision,
+    buildInfoKeys     := Seq[BuildInfoKey](name, version),
     libraryDependencies ++= Seq(
       "com.github.pureconfig" %% "pureconfig-cats-effect"    % "0.17.7",
       "com.github.pureconfig" %% "pureconfig-generic-scala3" % "0.17.7",
@@ -22,5 +28,11 @@ lazy val root = project
     ),
     run / fork        := true
   )
+  .settings(
+    dockerRepository     := sys.env.get("DOCKER_REPOSITORY"),
+    dockerBaseImage      := "eclipse-temurin:21-jre-jammy",
+    Docker / packageName := "grpc-echo-server",
+    dockerUpdateLatest   := true
+  )
   .settings(SbtTpolecat.options)
-  .enablePlugins(Fs2Grpc)
+  .enablePlugins(Fs2Grpc, BuildInfoPlugin, DockerPlugin, JavaAppPackaging)

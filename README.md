@@ -1,4 +1,4 @@
-# echo-grpc-server
+# grpc-echo-server
 
 A simple gRPC server that takes a [Status Code](https://grpc.github.io/grpc/core/md_doc_statuscodes.html) and returns
 a response after the configured delay.

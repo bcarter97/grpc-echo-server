@@ -8,7 +8,7 @@ import grpc.health.v1.{HealthCheckRequest, HealthCheckResponse, HealthFs2Grpc}
 import io.github.bcarter97.grpc.Context
 import io.grpc.ServerServiceDefinition
 
-private final class HealthImpl[F[_] : Applicative, A] extends HealthFs2Grpc[F, A] {
+final class HealthService[F[_] : Applicative, A] extends HealthFs2Grpc[F, A] {
   override def check(request: HealthCheckRequest, ctx: A): F[HealthCheckResponse] =
     HealthCheckResponse(HealthCheckResponse.ServingStatus.SERVING).pure[F]
 
@@ -18,8 +18,5 @@ private final class HealthImpl[F[_] : Applicative, A] extends HealthFs2Grpc[F, A
 
 object HealthService {
   def resource[F[_] : Async]: Resource[F, ServerServiceDefinition] =
-    HealthService(new HealthImpl[F, Map[String, String]])
-
-  def apply[F[_] : Async](impl: HealthFs2Grpc[F, Map[String, String]]): Resource[F, ServerServiceDefinition] =
-    HealthFs2Grpc.serviceResource(impl, Context.create[F])
+    HealthFs2Grpc.serviceResource(HealthService(), Context.create[F])
 }

@@ -7,7 +7,6 @@ Global / scalafmtOnCompile    := true
 
 ThisBuild / organization    := s"io.github.$scmOwner"
 ThisBuild / dynverSeparator := "-"
-ThisBuild / usePipelining   := true
 
 ThisBuild / versionScheme := Some("early-semver")
 ThisBuild / licenses      := List("BSD New" -> url("https://opensource.org/licenses/BSD-3-Clause"))
@@ -38,12 +37,12 @@ lazy val root = project
       "io.grpc"                % "grpc-netty-shaded"         % scalapb.compiler.Version.grpcJavaVersion,
       "io.grpc"                % "grpc-services"             % scalapb.compiler.Version.grpcJavaVersion,
       "org.typelevel"         %% "cats-effect"               % "3.5.4",
+      "org.typelevel"         %% "cats-effect-testkit"       % "3.5.4"                                 % Test,
       "org.typelevel"        %%% "munit-cats-effect"         % "2.0.0"                                 % Test
     )
   )
   .settings(
-    run / fork  := true,
-    test / fork := true
+    run / fork := true
   )
   .settings(
     dockerRepository     := Some("ghcr.io"),

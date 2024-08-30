@@ -16,10 +16,10 @@ import scala.jdk.CollectionConverters.*
 object Main extends IOApp.Simple {
   val serviceResource: Resource[IO, List[ServerServiceDefinition]] =
     for {
-      service    <- EchoService.resource[IO]
-      health     <- HealthService.resource[IO]
-      reflection <- IO(ProtoReflectionService.newInstance().bindService()).toResource
-    } yield List(service, health, reflection)
+      echoService       <- EchoService.resource[IO]
+      healthService     <- HealthService.resource[IO]
+      reflectionService <- IO(ProtoReflectionService.newInstance().bindService()).toResource
+    } yield List(echoService, healthService, reflectionService)
 
   val server: Resource[IO, Server] =
     for {

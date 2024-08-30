@@ -17,7 +17,8 @@ lazy val root = project
   .in(file("."))
   .settings(
     name         := projectName,
-    scalaVersion := scala3Version
+    scalaVersion := scala3Version,
+    description  := "gRPC server that response with a status after the given delay"
   )
   .settings(
     semanticdbEnabled := true,

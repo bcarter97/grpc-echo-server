@@ -4,9 +4,9 @@ import cats.effect.IO
 import io.grpc.Metadata
 import munit.CatsEffectSuite
 
-class MetadataSuite extends CatsEffectSuite {
+class ContextSuite extends CatsEffectSuite {
 
-  test("mkMetadata should convert Metadata into a Map, dropping keys that can't be decoded") {
+  test("Context.create should convert Metadata into a Map, dropping keys that can't be decoded") {
     val expected = Map(
       "key1" -> "value1",
       "key2" -> "value2"
@@ -24,7 +24,7 @@ class MetadataSuite extends CatsEffectSuite {
               )
             )
           )
-      result   <- mkMetadata[IO](metadata)
+      result   <- Context.create[IO](metadata)
     } yield assertEquals(result, expected)
   }
 

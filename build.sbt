@@ -42,7 +42,8 @@ lazy val root = project
     )
   )
   .settings(
-    run / fork := true
+    run / fork  := true,
+    test / fork := true
   )
   .settings(
     dockerRepository     := Some("ghcr.io"),

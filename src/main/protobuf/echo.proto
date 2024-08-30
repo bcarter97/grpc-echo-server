@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package io.github.bcarter97.echo.v1;
+
+service Echo {
+  rpc ForFeatures (EchoRequest) returns (EchoResponse) {}
+}
+
+message EchoRequest {
+  int32 code = 1;
+}
+
+message EchoResponse {
+  int32 code = 1;
+}

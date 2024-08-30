@@ -1,7 +1,39 @@
 package io.github.bcarter97.echo
 
-import cats.effect.{IO, IOApp}
+import cats.effect.{IO, IOApp, Resource}
+import fs2.grpc.syntax.all.*
+import io.github.bcarter97.echo.config.Config
+import io.github.bcarter97.echo.health.HealthService
+import io.github.bcarter97.echo.v1.EchoService
+import io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder
+import io.grpc.protobuf.services.ProtoReflectionService
+import io.grpc.{Server, ServerServiceDefinition}
+import pureconfig.ConfigSource
+import pureconfig.module.catseffect.syntax.*
+
+import scala.jdk.CollectionConverters.*
 
 object Main extends IOApp.Simple {
-  override def run: IO[Unit] = IO.println("Hello world")
+  val serviceResource: Resource[IO, List[ServerServiceDefinition]] =
+    for {
+      service    <- EchoService.resource[IO]
+      health     <- HealthService.resource[IO]
+      reflection <- IO(ProtoReflectionService.newInstance().bindService()).toResource
+    } yield List(service, health, reflection)
+
+  val server: Resource[IO, Server] =
+    for {
+      config   <- ConfigSource.default.at("grpc-server").loadF[IO, Config]().toResource
+      address  <- config.socketAddress[IO].toResource
+      executor <- IO.executor.toResource
+      services <- serviceResource
+      server   <- NettyServerBuilder
+                    .forAddress(address)
+                    .executor(executor)
+                    .addServices(services.asJava)
+                    .resource[IO]
+                    .evalMap(server => IO(server.start()))
+    } yield server
+
+  override def run: IO[Unit] = server.useForever
 }

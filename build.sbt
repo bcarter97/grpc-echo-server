@@ -1,18 +1,22 @@
 val scala3Version = "3.5.0"
+val projectName   = "echo-grpc-server"
+val scmOwner      = "bcarter97"
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
 Global / scalafmtOnCompile    := true
 
-ThisBuild / organization    := "io.github.bcarter97"
+ThisBuild / organization    := s"io.github.$scmOwner"
 ThisBuild / dynverSeparator := "-"
-ThisBuild / versionScheme   := Some("early-semver")
-ThisBuild / licenses        := List("BSD New" -> url("https://opensource.org/licenses/BSD-3-Clause"))
 ThisBuild / usePipelining   := true
+
+ThisBuild / versionScheme := Some("early-semver")
+ThisBuild / licenses      := List("BSD New" -> url("https://opensource.org/licenses/BSD-3-Clause"))
+ThisBuild / homepage      := Some(url(s"https://github.com/$scmOwner/$projectName"))
 
 lazy val root = project
   .in(file("."))
   .settings(
-    name         := "grpc-echo-server",
+    name         := projectName,
     scalaVersion := scala3Version
   )
   .settings(
@@ -39,9 +43,9 @@ lazy val root = project
     run / fork := true
   )
   .settings(
-    dockerRepository     := sys.env.get("DOCKER_REPOSITORY"),
+    dockerRepository     := Some("ghcr.io"),
     dockerBaseImage      := "eclipse-temurin:21-jre-jammy",
-    Docker / packageName := "grpc-echo-server",
+    Docker / packageName := s"$scmOwner/$projectName",
     dockerUpdateLatest   := true
   )
   .settings(SbtTpolecat.options)

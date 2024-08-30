@@ -7,6 +7,7 @@ ThisBuild / organization    := "io.github.bcarter97"
 ThisBuild / dynverSeparator := "-"
 ThisBuild / versionScheme   := Some("early-semver")
 ThisBuild / licenses        := List("BSD New" -> url("https://opensource.org/licenses/BSD-3-Clause"))
+ThisBuild / usePipelining   := true
 
 lazy val root = project
   .in(file("."))

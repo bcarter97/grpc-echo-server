@@ -33,5 +33,7 @@ ERROR:
 | Environment variable | Default   |
 |----------------------|-----------|
 | `LOG_LEVEL`          | `INFO`    |
-| `GRPC_HOST`          | `0.0.0.0` |
-| `GRPC_PORT`          | `4770`    |
+| `GRPC_SERVER_HOST`   | `0.0.0.0` |
+| `GRPC_SERVER_PORT`   | `4770`    |
+| `GRPC_CLIENT_HOST`   | NA        |
+| `GRPC_CLIENT_PORT`   | NA        |

@@ -1,8 +1,8 @@
 package io.github.bcarter97.grpc
 
+import cats.Eq
 import cats.effect.Sync
 import cats.syntax.all.*
-import cats.{Eq, Show}
 import io.grpc.Metadata as JMetadata
 
 import scala.jdk.CollectionConverters.*
@@ -16,9 +16,8 @@ object Context {
     inline def value: Map[String, String] = context
   }
 
-  val empty: Context  = Map.empty[String, String]
-  given Show[Context] = Show.catsShowForMap[String, String]
-  given Eq[Context]   = Eq.catsKernelEqForMap[String, String]
+  val empty: Context = Map.empty[String, String]
+  given Eq[Context]  = Eq.catsKernelEqForMap[String, String]
 }
 
 object Metadata {
@@ -35,7 +34,8 @@ object Metadata {
     private def stringKey(key: String): JMetadata.Key[String] = JMetadata.Key.of(key, JMetadata.ASCII_STRING_MARSHALLER)
 
     extension (metadata: JMetadata) {
-      def keysF[F[_] : Sync]: F[List[String]] = Sync[F].delay(metadata.keys().asScala.toList)
+      def keysF[F[_] : Sync]: F[List[String]] =
+        Sync[F].delay(metadata.keys().asScala.toList)
 
       def getF[F[_] : Sync](key: String): F[Option[String]] =
         Sync[F].delay(metadata.get(stringKey(key))).attempt.map(_.toOption)

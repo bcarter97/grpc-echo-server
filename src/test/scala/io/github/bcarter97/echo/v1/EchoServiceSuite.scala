@@ -7,10 +7,14 @@ import cats.syntax.all.*
 import io.github.bcarter97.util.{RandomPort, TestClient, TestServer}
 import io.grpc.StatusRuntimeException
 import munit.CatsEffectSuite
+import org.typelevel.log4cats.Logger
+import org.typelevel.log4cats.noop.NoOpLogger
 
 import scala.concurrent.duration.*
 
 class EchoServiceSuite extends CatsEffectSuite {
+
+  private given Logger[IO] = NoOpLogger[IO]
 
   private val liveClientFixture =
     ResourceFunFixture(

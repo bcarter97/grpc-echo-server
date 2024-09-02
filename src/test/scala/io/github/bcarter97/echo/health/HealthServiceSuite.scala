@@ -4,8 +4,12 @@ import cats.effect.IO
 import grpc.health.v1.{HealthCheckRequest, HealthCheckResponse, HealthFs2Grpc}
 import io.github.bcarter97.util.{RandomPort, TestClient, TestServer}
 import munit.CatsEffectSuite
+import org.typelevel.log4cats.Logger
+import org.typelevel.log4cats.noop.NoOpLogger
 
 class HealthServiceSuite extends CatsEffectSuite {
+
+  private given Logger[IO] = NoOpLogger[IO]
 
   private val clientFixture =
     ResourceFunFixture(

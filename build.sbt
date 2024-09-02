@@ -28,6 +28,8 @@ lazy val root = project
   )
   .settings(
     libraryDependencies ++= Seq(
+      "ch.qos.logback"         % "logback-classic"           % "1.5.7",
+      "net.logstash.logback"   % "logstash-logback-encoder"  % "8.0",
       "com.github.pureconfig" %% "pureconfig-cats-effect"    % "0.17.7",
       "com.github.pureconfig" %% "pureconfig-generic-scala3" % "0.17.7",
       "com.github.pureconfig" %% "pureconfig-ip4s"           % "0.17.7",
@@ -38,11 +40,13 @@ lazy val root = project
       "io.grpc"                % "grpc-services"             % scalapb.compiler.Version.grpcJavaVersion,
       "org.typelevel"         %% "cats-effect"               % "3.5.4",
       "org.typelevel"         %% "cats-effect-testkit"       % "3.5.4"                                 % Test,
-      "org.typelevel"        %%% "munit-cats-effect"         % "2.0.0"                                 % Test
+      "org.typelevel"        %%% "munit-cats-effect"         % "2.0.0"                                 % Test,
+      "org.typelevel"         %% "log4cats-slf4j"            % "2.7.0"
     )
   )
   .settings(
-    run / fork := true
+    run / fork  := true,
+    Test / fork := true
   )
   .settings(
     dockerRepository     := Some("ghcr.io"),

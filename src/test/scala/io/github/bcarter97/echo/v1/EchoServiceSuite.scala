@@ -4,6 +4,7 @@ import cats.Id
 import cats.effect.testkit.TestControl
 import cats.effect.{IO, Outcome}
 import cats.syntax.all.*
+import io.github.bcarter97.grpc.Context
 import io.github.bcarter97.util.{RandomPort, TestClient, TestServer}
 import io.grpc.StatusRuntimeException
 import munit.CatsEffectSuite
@@ -28,14 +29,14 @@ class EchoServiceSuite extends CatsEffectSuite {
 
   liveClientFixture.test("return an OK response") { client =>
     client
-      .echo(EchoRequest(0, 0), Map.empty)
+      .echo(EchoRequest(0, 0), Context.empty)
       .assertEquals(EchoResponse(0, 0))
   }
 
   liveClientFixture.test("return an Error response") { client =>
     (1 to 16).toList.traverse { code =>
       client
-        .echo(EchoRequest(code, 0), Map.empty)
+        .echo(EchoRequest(code, 0), Context.empty)
         .attempt
         .map(maybeError =>
           assertEquals(maybeError.leftMap(_.asInstanceOf[StatusRuntimeException].getStatus.getCode.value()), Left(code))
@@ -45,7 +46,7 @@ class EchoServiceSuite extends CatsEffectSuite {
   }
 
   test("return a response after a delay") {
-    val result = EchoService[IO, Map[String, String]]().echo(EchoRequest(0, 100), Map.empty)
+    val result = EchoService[IO, Context]().echo(EchoRequest(0, 100), Context.empty)
 
     TestControl.execute(result).flatMap { control =>
       for {

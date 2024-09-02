@@ -5,8 +5,8 @@ import cats.syntax.all.*
 import cats.{Applicative, MonadThrow, Show}
 import fs2.Stream
 import grpc.health.v1.{HealthCheckRequest, HealthCheckResponse, HealthFs2Grpc}
-import io.github.bcarter97.echo.circe.Codec.given
-import io.github.bcarter97.grpc.Context
+import io.github.bcarter97.echo.instances.all.given
+import io.github.bcarter97.grpc.{Context, Metadata}
 import io.grpc.ServerServiceDefinition
 import org.typelevel.log4cats.Logger
 import org.typelevel.log4cats.syntax.*
@@ -35,5 +35,5 @@ object HealthService {
     }
 
   def resource[F[_] : Async : Logger]: Resource[F, ServerServiceDefinition] =
-    HealthFs2Grpc.serviceResource(logged[F, Map[String, String]](HealthService()), Context.create[F])
+    HealthFs2Grpc.serviceResource(logged[F, Context](HealthService()), Metadata.create[F])
 }

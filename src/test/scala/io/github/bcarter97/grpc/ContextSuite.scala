@@ -28,4 +28,15 @@ class ContextSuite extends CatsEffectSuite {
     } yield assertEquals(result, expected)
   }
 
+  test("roundtrip valid key-value pairs") {
+    val expected = Map(
+      "key1" -> "value1",
+      "key2" -> "value2"
+    )
+
+    for {
+      extracted <- Context.extract[IO](expected)
+      created   <- Context.create[IO](extracted)
+    } yield assertEquals(created, expected)
+  }
 }

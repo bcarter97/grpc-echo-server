@@ -1,20 +1,23 @@
 package io.github.bcarter97.echo.instances
 
 import cats.Show
+import cats.syntax.all.*
 import grpc.health.v1.{HealthCheckRequest, HealthCheckResponse}
 import io.circe.Encoder
 import io.circe.syntax.*
 import io.github.bcarter97.echo.circe.Codec.given
 import io.github.bcarter97.echo.v1.{EchoRequest, EchoResponse}
+import io.github.bcarter97.grpc.Context
 
 object all {
   private def toShow[T : Encoder]: Show[T] = _.asJson.noSpaces
 
-  given Show[Map[String, String]] = toShow
+  given mapShow: Show[Map[String, String]] = toShow
+  given contextShow: Show[Context]         = mapShow.contramap(_.value)
 
-  given Show[HealthCheckRequest]  = toShow
-  given Show[HealthCheckResponse] = toShow
+  given healthCheckRequestShow: Show[HealthCheckRequest]   = toShow
+  given healthCheckResponseShow: Show[HealthCheckResponse] = toShow
 
-  given Show[EchoRequest]  = toShow
-  given Show[EchoResponse] = toShow
+  given echoRequestShow: Show[EchoRequest]   = toShow
+  given echoResponseShow: Show[EchoResponse] = toShow
 }

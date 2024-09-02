@@ -28,6 +28,10 @@ ERROR:
   Message: UNAVAILABLE after 500 milliseconds
 ```
 
-## Logging
+## Configuration
 
-The log level can be configured with the environment variable `LOG_LEVEL`. this defaults to `INFO`.
+| Environment variable | Default   |
+|----------------------|-----------|
+| `LOG_LEVEL`          | `INFO`    |
+| `GRPC_HOST`          | `0.0.0.0` |
+| `GRPC_PORT`          | `4770`    |

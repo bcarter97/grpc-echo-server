@@ -10,8 +10,8 @@ object Context {
   def create[F[_]](using F: Sync[F])(metadata: Metadata): F[Map[String, String]] =
     for {
       keys <- F.delay(metadata.keys().asScala.toList)
-      keys <- keys.flatTraverse(key => metadata.getF(key).map(_.map(key -> _).toList))
-    } yield keys.toMap
+      kvs  <- keys.flatTraverse(key => metadata.getF(key).map(_.map(key -> _).toList))
+    } yield kvs.toMap
 
   def extract[F[_]](using F: Sync[F])(context: Map[String, String]): F[Metadata] =
     F.delay(Metadata()).flatMap(_.putAllF(context))

@@ -1,10 +1,10 @@
 package io.github.bcarter97.echo.v1
 
-import cats.Show
-import cats.effect.{Async, MonadCancelThrow, Resource}
+import cats.effect.{Async, Resource}
 import cats.syntax.all.*
-import io.github.bcarter97.echo.circe.Codec.given
-import io.github.bcarter97.grpc.Context
+import cats.{MonadThrow, Show}
+import io.github.bcarter97.echo.instances.all.given
+import io.github.bcarter97.grpc.{Context, Metadata}
 import io.grpc.{ServerServiceDefinition, Status}
 import org.typelevel.log4cats.Logger
 import org.typelevel.log4cats.syntax.*
@@ -29,7 +29,7 @@ final class EchoService[F[_], A](using F: Async[F]) extends EchoFs2Grpc[F, A] {
 }
 
 object EchoService {
-  private def logged[F[_] : MonadCancelThrow : Logger, A : Show](delegate: EchoFs2Grpc[F, A]) = new EchoFs2Grpc[F, A] {
+  private def logged[F[_] : MonadThrow : Logger, A : Show](delegate: EchoFs2Grpc[F, A]) = new EchoFs2Grpc[F, A] {
     override def echo(request: EchoRequest, ctx: A): F[EchoResponse] =
       debug"Calling EchoService#echo with request ${request.show} and context ${ctx.show}" >> delegate
         .echo(request, ctx)
@@ -40,5 +40,5 @@ object EchoService {
   }
 
   def resource[F[_] : Async : Logger]: Resource[F, ServerServiceDefinition] =
-    EchoFs2Grpc.serviceResource(logged[F, Map[String, String]](EchoService()), Context.create[F])
+    EchoFs2Grpc.serviceResource(logged[F, Context](EchoService()), Metadata.create[F])
 }

@@ -2,6 +2,7 @@ package io.github.bcarter97.echo.health
 
 import cats.effect.IO
 import grpc.health.v1.{HealthCheckRequest, HealthCheckResponse, HealthFs2Grpc}
+import io.github.bcarter97.grpc.Context
 import io.github.bcarter97.util.{RandomPort, TestClient, TestServer}
 import munit.CatsEffectSuite
 import org.typelevel.log4cats.Logger
@@ -23,7 +24,7 @@ class HealthServiceSuite extends CatsEffectSuite {
 
   clientFixture.test("return SERVING") { client =>
     client
-      .check(HealthCheckRequest("dummy"), Map.empty)
+      .check(HealthCheckRequest("dummy"), Context.empty)
       .assertEquals(HealthCheckResponse(HealthCheckResponse.ServingStatus.SERVING))
   }
 }

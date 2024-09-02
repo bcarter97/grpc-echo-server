@@ -49,10 +49,11 @@ lazy val root = project
     Test / fork := true
   )
   .settings(
-    dockerRepository     := Some("ghcr.io"),
-    dockerBaseImage      := "eclipse-temurin:21-jre-jammy",
-    Docker / packageName := s"$scmOwner/$projectName",
-    dockerUpdateLatest   := true
+    dockerRepository      := Some("ghcr.io"),
+    dockerBaseImage       := "eclipse-temurin:21-jre-jammy",
+    Docker / packageName  := s"$scmOwner/$projectName",
+    dockerUpdateLatest    := true,
+    dockerBuildxPlatforms := Seq("linux/arm64", "linux/amd64")
   )
   .settings(SbtTpolecat.options)
   .enablePlugins(Fs2Grpc, BuildInfoPlugin, DockerPlugin, JavaAppPackaging)

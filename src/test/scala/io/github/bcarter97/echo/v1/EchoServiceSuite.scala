@@ -21,7 +21,7 @@ class EchoServiceSuite extends CatsEffectSuite {
     ResourceFunFixture(
       for {
         port    <- RandomPort[IO].toResource
-        service <- EchoService.resource[IO]
+        service <- SimpleEchoService.resource[IO]
         _       <- TestServer[IO](port, service)
         client  <- TestClient[IO, EchoFs2Grpc](port, EchoFs2Grpc)
       } yield client
@@ -46,7 +46,7 @@ class EchoServiceSuite extends CatsEffectSuite {
   }
 
   test("return a response after a delay") {
-    val result = EchoService[IO, Context]().echo(EchoRequest(0, 100), Context.empty)
+    val result = SimpleEchoService[IO, Context]().echo(EchoRequest(0, 100), Context.empty)
 
     TestControl.execute(result).flatMap { control =>
       for {

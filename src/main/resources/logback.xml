@@ -7,7 +7,7 @@
         <resetJUL>false</resetJUL>
     </contextListener>
 
-    <root level="${LOG_LEVEL:-DEBUG}">
+    <root level="${LOG_LEVEL:-INFO}">
         <appender-ref ref="console"/>
     </root>
 </configuration>

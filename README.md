@@ -27,3 +27,7 @@ ERROR:
   Code: Unavailable
   Message: UNAVAILABLE after 500 milliseconds
 ```
+
+## Logging
+
+The log level can be configured with the environment variable `LOG_LEVEL`. this defaults to `INFO`.

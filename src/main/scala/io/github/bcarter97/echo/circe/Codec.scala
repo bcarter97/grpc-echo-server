@@ -4,7 +4,7 @@ import grpc.health.v1.HealthCheckResponse.ServingStatus
 import grpc.health.v1.{HealthCheckRequest, HealthCheckResponse}
 import io.circe.Encoder
 import io.circe.generic.semiauto
-import io.github.bcarter97.echo.v1.{EchoRequest, EchoResponse}
+import io.github.bcarter97.echo.v1.{ServerRequest, ServerResponse}
 import io.grpc.Status
 
 object Codec {
@@ -22,6 +22,6 @@ object Codec {
   given Encoder[HealthCheckResponse] = semiauto.deriveEncoder[HealthCheckResponse]
   given Encoder[HealthCheckRequest]  = semiauto.deriveEncoder[HealthCheckRequest]
 
-  given Encoder[EchoRequest]  = semiauto.deriveEncoder[EchoRequest]
-  given Encoder[EchoResponse] = semiauto.deriveEncoder[EchoResponse]
+  given Encoder[ServerRequest]  = semiauto.deriveEncoder[ServerRequest]
+  given Encoder[ServerResponse] = semiauto.deriveEncoder[ServerResponse]
 }

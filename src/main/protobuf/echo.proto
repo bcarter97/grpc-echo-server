@@ -9,9 +9,15 @@ service Echo {
 message ServerRequest {
   int32 code = 1;
   int64 delay = 2;
+  ClientRequest clientRequest = 3;
 }
 
 message ServerResponse {
+  int32 code = 1;
+  int64 delay = 2;
+}
+
+message ClientRequest {
   int32 code = 1;
   int64 delay = 2;
 }

@@ -17,16 +17,16 @@ import java.net.SocketAddress
 import scala.concurrent.duration.*
 
 final class SimpleEchoService[F[_], A](using F: Async[F]) extends EchoFs2Grpc[F, A] {
-  override def echo(request: EchoRequest, ctx: A): F[EchoResponse] = {
+  override def echo(request: ServerRequest, ctx: A): F[ServerResponse] = {
     val response = request match {
-      case EchoRequest(0, delay)     => EchoResponse(0, delay).pure[F]
-      case EchoRequest(other, delay) =>
+      case ServerRequest(0, delay)     => ServerResponse(0, delay).pure[F]
+      case ServerRequest(other, delay) =>
         val status      = Status.fromCodeValue(other)
         val description = {
           val code = status.getCode.toString
           s"$code after ${delay.millis}"
         }
-        status.withDescription(description).asRuntimeException().raiseError[F, EchoResponse]
+        status.withDescription(description).asRuntimeException().raiseError[F, ServerResponse]
     }
 
     F.sleep(request.delay.millis) >> response
@@ -35,7 +35,7 @@ final class SimpleEchoService[F[_], A](using F: Async[F]) extends EchoFs2Grpc[F,
 
 object SimpleEchoService {
   private def logged[F[_] : MonadThrow : Logger, A : Show](delegate: EchoFs2Grpc[F, A]) = new EchoFs2Grpc[F, A] {
-    override def echo(request: EchoRequest, ctx: A): F[EchoResponse] =
+    override def echo(request: ServerRequest, ctx: A): F[ServerResponse] =
       debug"Calling SimpleEchoService#echo with request ${request.show} and context ${ctx.show}" >> delegate
         .echo(request, ctx)
         .attemptTap {
@@ -49,12 +49,12 @@ object SimpleEchoService {
 }
 
 final class PropagatingEchoService[F[_], A](client: EchoFs2Grpc[F, A]) extends EchoFs2Grpc[F, A] {
-  override def echo(request: EchoRequest, ctx: A): F[EchoResponse] = client.echo(request, ctx)
+  override def echo(request: ServerRequest, ctx: A): F[ServerResponse] = client.echo(request, ctx)
 }
 
 object PropagatingEchoService {
   private def logged[F[_] : MonadThrow : Logger, A : Show](delegate: EchoFs2Grpc[F, A]) = new EchoFs2Grpc[F, A] {
-    override def echo(request: EchoRequest, ctx: A): F[EchoResponse] =
+    override def echo(request: ServerRequest, ctx: A): F[ServerResponse] =
       debug"Calling PropagatingEchoService#echo with request ${request.show} and context ${ctx.show}" >> delegate
         .echo(request, ctx)
         .attemptTap {

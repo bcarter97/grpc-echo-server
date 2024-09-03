@@ -6,7 +6,7 @@ import grpc.health.v1.{HealthCheckRequest, HealthCheckResponse}
 import io.circe.Encoder
 import io.circe.syntax.*
 import io.github.bcarter97.echo.circe.Codec.given
-import io.github.bcarter97.echo.v1.{EchoRequest, EchoResponse}
+import io.github.bcarter97.echo.v1.{ServerRequest, ServerResponse}
 import io.github.bcarter97.grpc.Context
 
 object all {
@@ -18,6 +18,6 @@ object all {
   given healthCheckRequestShow: Show[HealthCheckRequest]   = toShow
   given healthCheckResponseShow: Show[HealthCheckResponse] = toShow
 
-  given echoRequestShow: Show[EchoRequest]   = toShow
-  given echoResponseShow: Show[EchoResponse] = toShow
+  given serverRequestShow: Show[ServerRequest]   = toShow
+  given serverResponseShow: Show[ServerResponse] = toShow
 }

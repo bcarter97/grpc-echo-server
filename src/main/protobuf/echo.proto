@@ -3,15 +3,15 @@ syntax = "proto3";
 package io.github.bcarter97.echo.v1;
 
 service Echo {
-  rpc Echo (EchoRequest) returns (EchoResponse) {}
+  rpc Echo (ServerRequest) returns (ServerResponse) {}
 }
 
-message EchoRequest {
+message ServerRequest {
   int32 code = 1;
   int64 delay = 2;
 }
 
-message EchoResponse {
+message ServerResponse {
   int32 code = 1;
   int64 delay = 2;
 }

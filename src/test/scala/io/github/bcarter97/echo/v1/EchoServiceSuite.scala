@@ -29,14 +29,14 @@ class EchoServiceSuite extends CatsEffectSuite {
 
   liveClientFixture.test("return an OK response") { client =>
     client
-      .echo(ServerRequest(0, 0), Context.empty)
+      .echo(ServerRequest(0, 0, None), Context.empty)
       .assertEquals(ServerResponse(0, 0))
   }
 
   liveClientFixture.test("return an Error response") { client =>
     (1 to 16).toList.traverse { code =>
       client
-        .echo(ServerRequest(code, 0), Context.empty)
+        .echo(ServerRequest(code, 0, None), Context.empty)
         .attempt
         .map(maybeError =>
           assertEquals(maybeError.leftMap(_.asInstanceOf[StatusRuntimeException].getStatus.getCode.value()), Left(code))
@@ -46,7 +46,8 @@ class EchoServiceSuite extends CatsEffectSuite {
   }
 
   test("return a response after a delay") {
-    val result = SimpleEchoService[IO, Context]().echo(ServerRequest(0, 100), Context.empty)
+    val request = ServerRequest(0, 100, None)
+    val result  = SimpleEchoService[IO, Context]().echo(request, Context.empty)
 
     TestControl.execute(result).flatMap { control =>
       for {

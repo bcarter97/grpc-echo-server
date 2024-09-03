@@ -17,20 +17,16 @@ import java.net.SocketAddress
 import scala.concurrent.duration.*
 
 final class SimpleEchoService[F[_], A](using F: Async[F]) extends EchoFs2Grpc[F, A] {
-  override def echo(request: ServerRequest, ctx: A): F[ServerResponse] = {
-    val response = request match {
-      case ServerRequest(0, delay)     => ServerResponse(0, delay).pure[F]
-      case ServerRequest(other, delay) =>
-        val status      = Status.fromCodeValue(other)
-        val description = {
-          val code = status.getCode.toString
-          s"$code after ${delay.millis}"
-        }
-        status.withDescription(description).asRuntimeException().raiseError[F, ServerResponse]
-    }
-
-    F.sleep(request.delay.millis) >> response
+  def response(request: ServerRequest) = request match {
+    case ServerRequest(0, delay, _)     => ServerResponse(0, delay).pure[F]
+    case ServerRequest(other, delay, _) =>
+      val status      = Status.fromCodeValue(other)
+      val description = s"${status.getCode} after ${delay.millis}"
+      status.withDescription(description).asRuntimeException().raiseError[F, ServerResponse]
   }
+
+  override def echo(request: ServerRequest, ctx: A): F[ServerResponse] =
+    F.sleep(request.delay.millis) >> response(request)
 }
 
 object SimpleEchoService {
@@ -39,8 +35,8 @@ object SimpleEchoService {
       debug"Calling SimpleEchoService#echo with request ${request.show} and context ${ctx.show}" >> delegate
         .echo(request, ctx)
         .attemptTap {
-          case Left(error)     => Logger[F].error(error)(s"EchoService#echo returned ${error.getMessage}")
-          case Right(response) => Logger[F].info(s"EchoService#echo returned ${response.show}")
+          case Left(error)     => Logger[F].error(error)(s"SimpleEchoService#echo returned ${error.getMessage}")
+          case Right(response) => Logger[F].info(s"SimpleEchoService#echo returned ${response.show}")
         }
   }
 
@@ -49,7 +45,14 @@ object SimpleEchoService {
 }
 
 final class PropagatingEchoService[F[_], A](client: EchoFs2Grpc[F, A]) extends EchoFs2Grpc[F, A] {
-  override def echo(request: ServerRequest, ctx: A): F[ServerResponse] = client.echo(request, ctx)
+  private val toServerRequest: ClientRequest => ServerRequest = { case ClientRequest(code, delay) =>
+    ServerRequest(code = code, delay = delay, clientRequest = None)
+  }
+
+  override def echo(request: ServerRequest, ctx: A): F[ServerResponse] = {
+    val serverRequest = request.clientRequest.map(toServerRequest).getOrElse(request)
+    client.echo(serverRequest, ctx)
+  }
 }
 
 object PropagatingEchoService {
@@ -58,8 +61,8 @@ object PropagatingEchoService {
       debug"Calling PropagatingEchoService#echo with request ${request.show} and context ${ctx.show}" >> delegate
         .echo(request, ctx)
         .attemptTap {
-          case Left(error)     => Logger[F].error(error)(s"EchoService#echo returned ${error.getMessage}")
-          case Right(response) => Logger[F].info(s"EchoService#echo returned ${response.show}")
+          case Left(error)     => Logger[F].error(error)(s"PropagatingEchoService#echo returned ${error.getMessage}")
+          case Right(response) => Logger[F].info(s"PropagatingEchoService#echo returned ${response.show}")
         }
   }
 

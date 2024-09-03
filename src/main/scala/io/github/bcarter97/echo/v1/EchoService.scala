@@ -32,7 +32,7 @@ final class SimpleEchoService[F[_], A](using F: Async[F]) extends EchoFs2Grpc[F,
 object SimpleEchoService {
   private def logged[F[_] : MonadThrow : Logger, A : Show](delegate: EchoFs2Grpc[F, A]) = new EchoFs2Grpc[F, A] {
     override def echo(request: ServerRequest, ctx: A): F[ServerResponse] =
-      debug"Calling SimpleEchoService#echo with request ${request.show} and context ${ctx.show}" >> delegate
+      info"Calling SimpleEchoService#echo with request ${request.show} and context ${ctx.show}" >> delegate
         .echo(request, ctx)
         .attemptTap {
           case Left(error)     => Logger[F].error(error)(s"SimpleEchoService#echo returned ${error.getMessage}")
@@ -44,21 +44,21 @@ object SimpleEchoService {
     EchoFs2Grpc.serviceResource(logged[F, Context](SimpleEchoService()), Metadata.create[F])
 }
 
-final class PropagatingEchoService[F[_], A](client: EchoFs2Grpc[F, A]) extends EchoFs2Grpc[F, A] {
+final class PropagatingEchoService[F[_], A](client: EchoFs2Grpc[F, A])(using F: Async[F]) extends EchoFs2Grpc[F, A] {
   private val toServerRequest: ClientRequest => ServerRequest = { case ClientRequest(code, delay) =>
     ServerRequest(code = code, delay = delay, clientRequest = None)
   }
 
   override def echo(request: ServerRequest, ctx: A): F[ServerResponse] = {
     val serverRequest = request.clientRequest.map(toServerRequest).getOrElse(request)
-    client.echo(serverRequest, ctx)
+    F.sleep(serverRequest.delay.millis) >> client.echo(serverRequest, ctx)
   }
 }
 
 object PropagatingEchoService {
   private def logged[F[_] : MonadThrow : Logger, A : Show](delegate: EchoFs2Grpc[F, A]) = new EchoFs2Grpc[F, A] {
     override def echo(request: ServerRequest, ctx: A): F[ServerResponse] =
-      debug"Calling PropagatingEchoService#echo with request ${request.show} and context ${ctx.show}" >> delegate
+      info"Calling PropagatingEchoService#echo with request ${request.show} and context ${ctx.show}" >> delegate
         .echo(request, ctx)
         .attemptTap {
           case Left(error)     => Logger[F].error(error)(s"PropagatingEchoService#echo returned ${error.getMessage}")

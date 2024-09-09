@@ -28,7 +28,7 @@ lazy val root = project
   )
   .settings(
     libraryDependencies ++= Seq(
-      "ch.qos.logback"         % "logback-classic"           % "1.5.7",
+      "ch.qos.logback"         % "logback-classic"           % "1.5.8",
       "net.logstash.logback"   % "logstash-logback-encoder"  % "8.0",
       "com.github.pureconfig" %% "pureconfig-cats-effect"    % "0.17.7",
       "com.github.pureconfig" %% "pureconfig-generic-scala3" % "0.17.7",

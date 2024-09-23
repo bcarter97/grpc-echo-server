@@ -1,4 +1,4 @@
-val scala3Version = "3.5.0"
+val scala3Version = "3.5.1"
 val projectName   = "echo-grpc-server"
 val scmOwner      = "bcarter97"
 

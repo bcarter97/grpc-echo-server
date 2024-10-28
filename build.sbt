@@ -38,8 +38,8 @@ lazy val root = project
       "io.circe"              %% "circe-parser"              % "0.14.9",
       "io.grpc"                % "grpc-netty-shaded"         % scalapb.compiler.Version.grpcJavaVersion,
       "io.grpc"                % "grpc-services"             % scalapb.compiler.Version.grpcJavaVersion,
-      "org.typelevel"         %% "cats-effect"               % "3.5.4",
-      "org.typelevel"         %% "cats-effect-testkit"       % "3.5.4"                                 % Test,
+      "org.typelevel"         %% "cats-effect"               % "3.5.5",
+      "org.typelevel"         %% "cats-effect-testkit"       % "3.5.5"                                 % Test,
       "org.typelevel"        %%% "munit-cats-effect"         % "2.0.0"                                 % Test,
       "org.typelevel"         %% "log4cats-slf4j"            % "2.7.0"
     )

@@ -30,9 +30,9 @@ lazy val root = project
     libraryDependencies ++= Seq(
       "ch.qos.logback"         % "logback-classic"           % "1.5.7",
       "net.logstash.logback"   % "logstash-logback-encoder"  % "8.0",
-      "com.github.pureconfig" %% "pureconfig-cats-effect"    % "0.17.7",
-      "com.github.pureconfig" %% "pureconfig-generic-scala3" % "0.17.7",
-      "com.github.pureconfig" %% "pureconfig-ip4s"           % "0.17.7",
+      "com.github.pureconfig" %% "pureconfig-cats-effect"    % "0.17.8",
+      "com.github.pureconfig" %% "pureconfig-generic-scala3" % "0.17.8",
+      "com.github.pureconfig" %% "pureconfig-ip4s"           % "0.17.8",
       "com.thesamet.scalapb"  %% "scalapb-runtime"           % scalapb.compiler.Version.scalapbVersion % "protobuf",
       "io.circe"              %% "circe-generic"             % "0.14.9",
       "io.circe"              %% "circe-parser"              % "0.14.9",

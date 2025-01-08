@@ -1,6 +1,7 @@
 package io.github.bcarter97.echo
 
 import buildinfo.BuildInfo
+import cats.effect.std.Dispatcher
 import cats.effect.{IO, IOApp, Resource}
 import cats.syntax.all.*
 import fs2.grpc.syntax.all.*
@@ -31,17 +32,19 @@ object Main extends IOApp.Simple {
 
   val server: Resource[IO, Server] =
     for {
-      config   <- ConfigSource.default.at("grpc").loadF[IO, Config]().toResource
-      _        <- info"Loaded config ${config.show}".toResource
-      address  <- config.server.socketAddress[IO].toResource
-      executor <- IO.executor.toResource
-      services <- serviceResource(config.client)
-      server   <- NettyServerBuilder
-                    .forAddress(address)
-                    .executor(executor)
-                    .addServices(services.asJava)
-                    .resource[IO]
-                    .evalMap(server => IO(server.start()))
+      config     <- ConfigSource.default.at("grpc").loadF[IO, Config]().toResource
+      _          <- info"Loaded config ${config.show}".toResource
+      address    <- config.server.socketAddress[IO].toResource
+      executor   <- IO.executor.toResource
+      services   <- serviceResource(config.client)
+      dispatcher <- Dispatcher.parallel[IO]
+      server     <- NettyServerBuilder
+                      .forAddress(address)
+                      .executor(executor)
+                      .addServices(services.asJava)
+                      .intercept(OtelServerInterceptor(dispatcher))
+                      .resource[IO]
+                      .evalMap(server => IO(server.start()))
     } yield server
 
   override def run: IO[Unit] =

@@ -47,7 +47,10 @@ object Metadata {
         } yield kvs.toMap
 
       def putF[F[_] : Sync](key: String, value: String): F[JMetadata] =
-        Sync[F].delay(metadata.put(stringKey(key), value)).as(metadata)
+        Sync[F].delay {
+          metadata.put(stringKey(key), value)
+          metadata
+        }
 
       def putAllF[F[_] : Sync](kvs: Iterable[(String, String)]): F[JMetadata] =
         kvs.toList.foldLeftM(metadata) { case (metadata, (key, value)) => metadata.putF(key, value) }
